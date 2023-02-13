@@ -48,7 +48,7 @@ impl Action for AddForeignKey {
             ALTER TABLE "{table}"
             ADD CONSTRAINT {constraint_name}
             FOREIGN KEY ({columns})
-            REFERENCES {referenced_table} ({referenced_columns})
+            REFERENCES "{referenced_table}" ({referenced_columns})
             ON DELETE {on_delete}
             ON UPDATE {on_update}
             NOT VALID
