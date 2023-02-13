@@ -224,6 +224,8 @@ primary_key = ["id"]
 	columns = ["user_id"]
 	referenced_table = "users"
 	referenced_columns = ["id"]
+	on_update = "restrict"
+	on_delete = "restrict"
 ```
 
 _Example: create `profiles` table based on existing `users` table_
@@ -289,6 +291,8 @@ table = "items"
 	columns = ["user_id"]
 	referenced_table = "users"
 	referenced_columns = ["id"]
+	on_update = "restrict"
+	on_delete = "restrict"
 ```
 
 #### Remove foreign key
