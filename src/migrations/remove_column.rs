@@ -89,7 +89,7 @@ impl Action for RemoveColumn {
                 .iter()
                 .map(|column| {
                     format!(
-                        "{alias} public.{table}.{real_name}%TYPE := NEW.{real_name};",
+                        "\"{alias}\" public.\"{table}\".\"{real_name}\"%TYPE := NEW.\"{real_name}\";",
                         table = table.real_name,
                         alias = column.name,
                         real_name = column.real_name,
@@ -107,7 +107,7 @@ impl Action for RemoveColumn {
                             DECLARE
                                 {declarations}
                             BEGIN
-                                NEW.{column_name} = {down};
+                                NEW."{column_name}" = {down};
                             END;
                         END IF;
                         RETURN NEW;
@@ -150,7 +150,7 @@ impl Action for RemoveColumn {
                         RETURNS TRIGGER AS $$
                         BEGIN
                             IF NOT reshape.is_new_schema() THEN
-                                IF NEW.{column} IS NULL THEN
+                                IF NEW."{column}" IS NULL THEN
                                     RAISE EXCEPTION '{column} can not be null';
                                 END IF;
                             END IF;
@@ -175,8 +175,8 @@ impl Action for RemoveColumn {
 
                     db.run(&format!(
                         r#"
-                        ALTER TABLE {table}
-                        ALTER COLUMN {column}
+                        ALTER TABLE "{table}"
+                        ALTER COLUMN "{column}"
                         DROP NOT NULL
                         "#,
                         table = self.table,
@@ -201,7 +201,7 @@ impl Action for RemoveColumn {
                     .iter()
                     .map(|column| {
                         format!(
-                            "NEW.{real_name} AS {alias}",
+                            "NEW.\"{real_name}\" AS \"{alias}\"",
                             alias = column.name,
                             real_name = column.real_name,
                         )
@@ -254,7 +254,7 @@ impl Action for RemoveColumn {
                     .iter()
                     .map(|column| {
                         format!(
-                            "NEW.{real_name} AS {alias}",
+                            "NEW.\"{real_name}\" AS \"{alias}\"",
                             alias = column.name,
                             real_name = column.real_name,
                         )
@@ -265,7 +265,7 @@ impl Action for RemoveColumn {
                 let from_table_columns = from_table
                     .columns
                     .iter()
-                    .map(|column| format!("{} as {}", column.real_name, column.name))
+                    .map(|column| format!("\"{}\" as \"{}\"", column.real_name, column.name))
                     .collect::<Vec<String>>()
                     .join(", ");
 
@@ -333,7 +333,7 @@ impl Action for RemoveColumn {
         for index in indices {
             db.run(&format!(
                 "
-                DROP INDEX CONCURRENTLY IF EXISTS {name}
+                DROP INDEX CONCURRENTLY IF EXISTS \"{name}\"
                 ",
                 name = index.name,
             ))
@@ -414,8 +414,8 @@ impl Action for RemoveColumn {
             // This ALTER TABLE call will not require any exclusive locks as it can use the validated constraint from above
             db.run(&format!(
                 r#"
-                ALTER TABLE {table}
-                ALTER COLUMN {column}
+                ALTER TABLE "{table}"
+                ALTER COLUMN "{column}"
                 SET NOT NULL
                 "#,
                 table = self.table,

@@ -111,7 +111,7 @@ impl Action for AddColumn {
             .iter()
             .map(|column| {
                 format!(
-                    "\"{alias}\" public.{table}.{real_name}%TYPE := NEW.{real_name};",
+                    "\"{alias}\" public.\"{table}\".\"{real_name}\"%TYPE := NEW.\"{real_name}\";",
                     table = table.real_name,
                     alias = column.name,
                     real_name = column.real_name,
@@ -223,7 +223,7 @@ impl Action for AddColumn {
                 let from_table_columns = from_table
                     .columns
                     .iter()
-                    .map(|column| format!("{} as {}", column.real_name, column.name))
+                    .map(|column| format!("\"{}\" as \"{}\"", column.real_name, column.name))
                     .collect::<Vec<String>>()
                     .join(", ");
 
@@ -232,7 +232,7 @@ impl Action for AddColumn {
                     .iter()
                     .map(|column| {
                         format!(
-                            "{table}.{alias} := NEW.{real_name};",
+                            "\"{table}\".\"{alias}\" := NEW.\"{real_name}\";",
                             table = table.name,
                             alias = column.name,
                             real_name = column.real_name,
