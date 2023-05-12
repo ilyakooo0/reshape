@@ -81,6 +81,7 @@ impl Action for AddColumn {
         let temp_column_name = self.temp_column_name(ctx);
 
         let mut definition_parts = vec![
+            temp_column_name.to_string(),
             format!("\"{}\"", temp_column_name.to_string()),
             self.column.data_type.to_string(),
         ];
