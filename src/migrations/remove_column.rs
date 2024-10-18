@@ -100,7 +100,7 @@ impl Action for RemoveColumn {
             if let Transformation::Simple(down) = down {
                 let query = format!(
                     r#"
-                    CREATE OR REPLACE FUNCTION {trigger_name}()
+                    CREATE OR REPLACE FUNCTION "{trigger_name}"()
                     RETURNS TRIGGER AS $$
                     BEGIN
                         IF reshape.is_new_schema() THEN
@@ -115,7 +115,7 @@ impl Action for RemoveColumn {
                     $$ language 'plpgsql';
 
                     DROP TRIGGER IF EXISTS "{trigger_name}" ON "{table}";
-                    CREATE TRIGGER "{trigger_name}" BEFORE UPDATE OR INSERT ON "{table}" FOR EACH ROW EXECUTE PROCEDURE {trigger_name}();
+                    CREATE TRIGGER "{trigger_name}" BEFORE UPDATE OR INSERT ON "{table}" FOR EACH ROW EXECUTE PROCEDURE "{trigger_name}"();
                     "#,
                     column_name = self.column,
                     trigger_name = self.trigger_name(ctx),
@@ -146,7 +146,7 @@ impl Action for RemoveColumn {
                     // NOT NULL is not checked at the end of a transaction, but immediately upon update.
                     let query = format!(
                         r#"
-                        CREATE OR REPLACE FUNCTION {trigger_name}()
+                        CREATE OR REPLACE FUNCTION "{trigger_name}"()
                         RETURNS TRIGGER AS $$
                         BEGIN
                             IF NOT reshape.is_new_schema() THEN
@@ -164,7 +164,7 @@ impl Action for RemoveColumn {
                             AFTER INSERT OR UPDATE
                             ON "{table}"
                             FOR EACH ROW
-                            EXECUTE PROCEDURE {trigger_name}();
+                            EXECUTE PROCEDURE "{trigger_name}"();
                         "#,
                         table = self.table,
                         trigger_name = self.not_null_constraint_trigger_name(ctx),

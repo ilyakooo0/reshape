@@ -124,7 +124,7 @@ impl Action for AddColumn {
                 // Add triggers to fill in values as they are inserted/updated
                 let query = format!(
                     r#"
-                    CREATE OR REPLACE FUNCTION {trigger_name}()
+                    CREATE OR REPLACE FUNCTION "{trigger_name}"()
                     RETURNS TRIGGER AS $$
                     BEGIN
                         IF NOT reshape.is_new_schema() THEN
@@ -139,7 +139,7 @@ impl Action for AddColumn {
                     $$ language 'plpgsql';
 
                     DROP TRIGGER IF EXISTS "{trigger_name}" ON "{table}";
-                    CREATE TRIGGER "{trigger_name}" BEFORE UPDATE OR INSERT ON "{table}" FOR EACH ROW EXECUTE PROCEDURE {trigger_name}();
+                    CREATE TRIGGER "{trigger_name}" BEFORE UPDATE OR INSERT ON "{table}" FOR EACH ROW EXECUTE PROCEDURE "{trigger_name}"();
                     "#,
                     temp_column_name = temp_column_name,
                     trigger_name = self.trigger_name(ctx),
@@ -183,7 +183,7 @@ impl Action for AddColumn {
                 // Add triggers to fill in values as they are inserted/updated
                 let query = format!(
                     r#"
-                    CREATE OR REPLACE FUNCTION {trigger_name}()
+                    CREATE OR REPLACE FUNCTION "{trigger_name}"()
                     RETURNS TRIGGER AS $$
                     #variable_conflict use_variable
                     BEGIN
@@ -208,7 +208,7 @@ impl Action for AddColumn {
                     $$ language 'plpgsql';
 
                     DROP TRIGGER IF EXISTS "{trigger_name}" ON "{from_table_real}";
-                    CREATE TRIGGER "{trigger_name}" BEFORE UPDATE OR INSERT ON "{from_table_real}" FOR EACH ROW EXECUTE PROCEDURE {trigger_name}();
+                    CREATE TRIGGER "{trigger_name}" BEFORE UPDATE OR INSERT ON "{from_table_real}" FOR EACH ROW EXECUTE PROCEDURE "{trigger_name}"();
                     "#,
                     assignments = from_table_assignments.join("\n"),
                     changed_table_real = table.real_name,
@@ -243,7 +243,7 @@ impl Action for AddColumn {
                 // Add triggers to fill in values as they are inserted/updated
                 let query = format!(
                     r#"
-                    CREATE OR REPLACE FUNCTION {trigger_name}()
+                    CREATE OR REPLACE FUNCTION "{trigger_name}"()
                     RETURNS TRIGGER AS $$
                     #variable_conflict use_variable
                     BEGIN
@@ -272,7 +272,7 @@ impl Action for AddColumn {
                     $$ language 'plpgsql';
 
                     DROP TRIGGER IF EXISTS "{trigger_name}" ON "{changed_table_real}";
-                    CREATE TRIGGER "{trigger_name}" BEFORE UPDATE OR INSERT ON "{changed_table_real}" FOR EACH ROW EXECUTE PROCEDURE {trigger_name}();
+                    CREATE TRIGGER "{trigger_name}" BEFORE UPDATE OR INSERT ON "{changed_table_real}" FOR EACH ROW EXECUTE PROCEDURE "{trigger_name}"();
                     "#,
                     changed_table_assignments = changed_table_assignments.join("\n"),
                     changed_table_real = table.real_name,

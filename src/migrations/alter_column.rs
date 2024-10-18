@@ -100,13 +100,13 @@ impl Action for AlterColumn {
 
         let query = format!(
             r#"
-                CREATE OR REPLACE FUNCTION {up_trigger}()
+                CREATE OR REPLACE FUNCTION "{up_trigger}"()
                 RETURNS TRIGGER AS $$
                 BEGIN
                     IF NOT reshape.is_new_schema() THEN
                         DECLARE
                             {declarations}
-                            {existing_column} public.{table}.{existing_column_real}%TYPE := NEW.{existing_column_real};
+                            {existing_column} public."{table}"."{existing_column_real}"%TYPE := NEW.{existing_column_real};
                         BEGIN
                             NEW.{temp_column} = {up};
                         END;
@@ -116,17 +116,17 @@ impl Action for AlterColumn {
                 $$ language 'plpgsql';
 
                 DROP TRIGGER IF EXISTS "{up_trigger}" ON "{table}";
-                CREATE TRIGGER "{up_trigger}" BEFORE INSERT OR UPDATE ON "{table}" FOR EACH ROW EXECUTE PROCEDURE {up_trigger}();
+                CREATE TRIGGER "{up_trigger}" BEFORE INSERT OR UPDATE ON "{table}" FOR EACH ROW EXECUTE PROCEDURE "{up_trigger}"();
 
-                CREATE OR REPLACE FUNCTION {down_trigger}()
+                CREATE OR REPLACE FUNCTION "{down_trigger}"()
                 RETURNS TRIGGER AS $$
                 BEGIN
                     IF reshape.is_new_schema() THEN
                         DECLARE
                             {declarations}
-                            {existing_column} public.{table}.{temp_column}%TYPE := NEW.{temp_column};
+                            {existing_column} public."{table}"."{temp_column}"%TYPE := NEW."{temp_column}";
                         BEGIN
-                            NEW.{existing_column_real} = {down};
+                            NEW."{existing_column_real}" = {down};
                         END;
                     END IF;
                     RETURN NEW;
@@ -134,7 +134,7 @@ impl Action for AlterColumn {
                 $$ language 'plpgsql';
 
                 DROP TRIGGER IF EXISTS "{down_trigger}" ON "{table}";
-                CREATE TRIGGER "{down_trigger}" BEFORE INSERT OR UPDATE ON "{table}" FOR EACH ROW EXECUTE PROCEDURE {down_trigger}();
+                CREATE TRIGGER "{down_trigger}" BEFORE INSERT OR UPDATE ON "{table}" FOR EACH ROW EXECUTE PROCEDURE "{down_trigger}"();
                 "#,
             existing_column = &self.column,
             existing_column_real = column.real_name,
